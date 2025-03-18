@@ -23,6 +23,7 @@ public class Game {
         while (errorCounter < 6 && charGuessedCounter < secretWord.length()) {
             Gallows.printGallows(errorCounter);
             System.out.println("Secret word: " + String.valueOf(guessedWord));
+            System.out.println("Errors: "+ errorCounter);
             char input = InputHelper.input();
 
             if (!secretWord.contains(String.valueOf(input))) {
@@ -36,6 +37,7 @@ public class Game {
             System.out.println("Congratulations! You won!");
         } else {
             Gallows.printGallows(errorCounter);
+            System.out.println("Errors: "+ errorCounter);
             System.out.println("You lost! The secret word was: " + secretWord.toUpperCase());
         }
     }

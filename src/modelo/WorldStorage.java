@@ -12,10 +12,6 @@ public class WorldStorage {
         this.collection = jsonDeserializer.deserializeJson(fileName);
     }
 
-    public Set<String> getCollection() {
-        return collection;
-    }
-
     public String getRandomWord() {
         if (collection.isEmpty()) {
             return null;
@@ -23,7 +19,5 @@ public class WorldStorage {
         List<String> wordList = new ArrayList<>(collection);
         return wordList.get(random.nextInt(wordList.size()));
     }
-
-
 
 }
