@@ -1,56 +1,63 @@
 package modelo;
 
-import service.InputHelper;
-
-import java.util.Arrays;
+import service.InputUtils;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Game {
-    private String secretWord;
+    private MaskedWord maskedWord;
     private int errorCounter;
     private int charGuessedCounter;
-    private char[] guessedWord;
+    private Set<Character> enteredLetters;
 
     public Game(String secretWord) {
-        this.secretWord = secretWord;
+        this.maskedWord = new MaskedWord(secretWord);
         this.errorCounter = 0;
         this.charGuessedCounter = 0;
-        this.guessedWord = new char[secretWord.length()];
-        Arrays.fill(guessedWord, '_');
+        this.enteredLetters = new HashSet<>();
     }
-
 
     public void play() {
-        while (errorCounter < 6 && charGuessedCounter < secretWord.length()) {
-            Gallows.printGallows(errorCounter);
-            System.out.println("Secret word: " + String.valueOf(guessedWord));
-            System.out.println("Errors: "+ errorCounter);
-            char input = InputHelper.input();
+        while (!isGameOver()) {
+            Gallows.print(errorCounter);
+            System.out.println("Entered letters: " + enteredLetters.toString());
+            System.out.println("Secret word: " + maskedWord.getMaskedWord());
+            System.out.println("Errors: " + errorCounter);
+            char input = Character.toLowerCase(InputUtils.inputChar());
 
-            if (!secretWord.contains(String.valueOf(input))) {
+            if (enteredLetters.contains(input)) {
+                System.out.println("You already guessed the letter: " + input);
+                continue;
+            }
+            enteredLetters.add(input);
+
+            if (!maskedWord.containsCharacter(input)) {
                 errorCounter++;
             } else {
-                int matches = checkCharacter(input);
-                charGuessedCounter += matches;
+                maskedWord.revealCharacter(input);
+                charGuessedCounter++;
             }
         }
-        if (charGuessedCounter == secretWord.length()) {
+
+        if (isWin()) {
             System.out.println("Congratulations! You won!");
-        } else {
-            Gallows.printGallows(errorCounter);
-            System.out.println("Errors: "+ errorCounter);
-            System.out.println("You lost! The secret word was: " + secretWord.toUpperCase());
+            System.out.println("The secret word is: " + maskedWord.getSecretWord().toUpperCase());
+        } else if (isLose()) {
+            Gallows.print(errorCounter);
+            System.out.println("Errors: " + errorCounter);
+            System.out.println("You lost! The secret word was: " + maskedWord.getSecretWord().toUpperCase());
         }
     }
 
-    public int checkCharacter(char character) {
-        int letterCounter = 0;
-        for (int i = 0; i < secretWord.length(); i++) {
-            if (secretWord.charAt(i) == character && guessedWord[i] == '_') {
-                guessedWord[i] = character;
-                letterCounter++;
-            }
-        }
-        return letterCounter;
+    private boolean isGameOver() {
+        return isWin() || isLose();
     }
 
+    private boolean isWin() {
+        return maskedWord.isFullyRevealed();
+    }
+
+    private boolean isLose() {
+        return errorCounter >= 6;
+    }
 }

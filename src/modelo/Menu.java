@@ -1,29 +1,44 @@
 package modelo;
 
+import service.InputUtils;
+
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Menu {
-    Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in);
+    private final static int START = 1;
+    private final static int RULES = 2;
+    private final static int EXIT = 3;
 
     public void startMenu() {
         int option = 0;
         do {
-            showMenu();
-            option = Integer.parseInt(scanner.nextLine());
-
+            System.out.println(START+". Start a new game.");
+            System.out.println(RULES+". Rules.");
+            System.out.println(EXIT+". Exit.");
+            option = InputUtils.inputInt(scanner);
             switch (option) {
-                case 1:
+                case START:
                     System.out.println("\nStart a new game! ");
                     WorldStorage store = new WorldStorage("noun.json");
-                    String secretWord = store.getRandomWord();
+                    Optional<String> secretWordOpt = store.getRandomWord();
+
+                    if (secretWordOpt.isEmpty()) {
+                        System.out.println("Error: No words available in the dictionary. Please check the file.");
+                        break;
+                    }
+
+                    String secretWord = secretWordOpt.get();
                     Game game = new Game(secretWord);
                     game.play();
                     break;
-                case 2:
+
+                case RULES:
                     System.out.println("\nRead rules! ");
                     Rule.printRules();
                     break;
-                case 3:
+                case EXIT:
                     System.out.println("\nExit from the game! ");
                     break;
                 default:
@@ -31,13 +46,5 @@ public class Menu {
             }
         } while (option != 3);
         scanner.close();
-    }
-
-    public void showMenu() {
-        System.out.println("\n-----* MENU *-----");
-        System.out.println("1. Start a new game");
-        System.out.println("2. Rules");
-        System.out.println("3. Exit");
-        System.out.println("Select one option: ");
     }
 }

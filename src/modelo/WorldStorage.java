@@ -3,21 +3,22 @@ import service.JsonDeserializer;
 import java.util.*;
 
 public class WorldStorage {
-    private final HashSet<String> collection;
+    private final Set<String> words;
     private final Random random;
 
     public WorldStorage(String fileName) {
         this.random = new Random();
         JsonDeserializer jsonDeserializer = new JsonDeserializer();
-        this.collection = jsonDeserializer.deserializeJson(fileName);
+        this.words = jsonDeserializer.deserializeJson(fileName);
     }
 
-    public String getRandomWord() {
-        if (collection.isEmpty()) {
-            return null;
+    public Optional<String> getRandomWord() {
+        if (words.isEmpty()) {
+            return Optional.empty();
         }
-        List<String> wordList = new ArrayList<>(collection);
-        return wordList.get(random.nextInt(wordList.size()));
+        List<String> wordList = new ArrayList<>(words);
+        return Optional.of(wordList.get(random.nextInt(wordList.size())));
     }
+
 
 }
